@@ -350,6 +350,32 @@ export class AttacksDisplay extends LitElement implements Controller {
     />`;
   }
 
+  private getBoatETA(boat: UnitView): string {
+    const plan = this.game.motionPlans().get(boat.id());
+    if (!plan || plan.path.length <= 1) return "";
+
+    const currentTick = this.game.ticks();
+    const dt = Math.max(0, currentTick - plan.startTick);
+    const stepIndex = Math.min(
+      plan.path.length - 1,
+      Math.floor(dt / Math.max(1, plan.ticksPerStep)),
+    );
+    const stepsLeft = Math.max(0, plan.path.length - 1 - stepIndex);
+    const stepProgress = dt % Math.max(1, plan.ticksPerStep);
+    const remainingTicks = Math.max(
+      0,
+      stepsLeft * plan.ticksPerStep - stepProgress,
+    );
+    if (remainingTicks <= 0) return "0s";
+
+    const remainingMs = remainingTicks * this.game.config().msPerTick();
+    const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+    const mins = Math.floor(remainingSeconds / 60);
+    const secs = remainingSeconds % 60;
+    return mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+  }
+
   private renderBoats() {
     if (this.outgoingBoats.length === 0) return html``;
 
@@ -365,6 +391,9 @@ export class AttacksDisplay extends LitElement implements Controller {
               >
               <span class="truncate text-xs ml-1"
                 >${this.getBoatTargetName(boat)}</span
+              >
+              <span class="truncate text-[0.72rem] ml-1 text-slate-300"
+                >${this.getBoatETA(boat)}</span
               >`,
             onClick: () => this.eventBus.emit(new GoToUnitEvent(boat)),
             className:
@@ -401,6 +430,9 @@ export class AttacksDisplay extends LitElement implements Controller {
               >
               <span class="truncate text-xs ml-1"
                 >${boat.owner()?.displayName()}</span
+              >
+              <span class="truncate text-[0.72rem] ml-1 text-slate-300"
+                >${this.getBoatETA(boat)}</span
               >`,
             onClick: () => this.eventBus.emit(new GoToUnitEvent(boat)),
             className:
