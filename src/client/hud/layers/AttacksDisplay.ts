@@ -367,10 +367,7 @@ export class AttacksDisplay extends LitElement implements Controller {
 
     const mins = Math.floor(remainingSeconds / 60);
     const secs = remainingSeconds % 60;
-    return (
-      mins > 0 ? `${mins}m` : ""
-      + secs > 0 ? `${secs}s` : ""
-    );
+    return (mins ? `${mins}m` : "") + (secs ? `${secs}s` : "");
   }
 
   private renderBoats() {
