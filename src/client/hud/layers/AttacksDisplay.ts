@@ -356,16 +356,10 @@ export class AttacksDisplay extends LitElement implements Controller {
 
     const currentTick = this.game.ticks();
     const dt = Math.max(0, currentTick - plan.startTick);
-    const stepIndex = Math.min(
-      plan.path.length - 1,
-      Math.floor(dt / Math.max(1, plan.ticksPerStep)),
-    );
+    const stepIndex = Math.min(plan.path.length - 1, Math.floor(dt / Math.max(1, plan.ticksPerStep)), );
     const stepsLeft = Math.max(0, plan.path.length - 1 - stepIndex);
     const stepProgress = dt % Math.max(1, plan.ticksPerStep);
-    const remainingTicks = Math.max(
-      0,
-      stepsLeft * plan.ticksPerStep - stepProgress,
-    );
+    const remainingTicks = Math.max(0, stepsLeft * plan.ticksPerStep - stepProgress, );
     if (remainingTicks <= 0) return "0s";
 
     const remainingMs = remainingTicks * this.game.config().msPerTick();
@@ -373,7 +367,10 @@ export class AttacksDisplay extends LitElement implements Controller {
 
     const mins = Math.floor(remainingSeconds / 60);
     const secs = remainingSeconds % 60;
-    return mins > 0 ? `${mins}m${secs}s` : `${secs}s`;
+    return (
+      mins > 0 ? `${mins}m` : ""
+      + secs > 0 ? `${secs}s` : ""
+    );
   }
 
   private renderBoats() {
